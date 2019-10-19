@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>App Store Search</title>
+        <meta name="viewport" charset="UTF-8" content="width=device-width">
+
+        <style>
+
+            a.boxed:link, a.boxed:visited {
+                background-color: rgb(88, 147, 185);
+                color: white;
+                padding: 15px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            a.boxed:hover {
+                background-color: rgb(115, 187, 235);
+            }
+            
+            body {
+                background-color: rgb(44, 42, 42);
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
+
+            h1 {
+                color: white;
+                font-size: 30px;
+            }
+
+            p {
+                border: 2px solid white;
+                padding: 20px;
+                color: white;
+            }
+
+            #pdiff {
+                border: 2px solid tan;
+            }
+
+            p.secondPara {
+                color: aqua;
+                text-align: center;
+            }
+
+            .tab {
+                overflow: hidden;
+                background-color: rgb(34, 34, 34);
+            }
+
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 16px;
+                transition: 0.3s;
+                font-size: 15px;
+                color: white;
+            }
+
+            .tab button:hover {
+                background-color: rgb(68, 68, 68);
+            }
+
+            .tab button.active {
+                background-color: rgb(44, 42, 42);
+            }
+
+            .searchbar {
+                float:top;
+                margin: 10px;
+                width:95%;
+                background-color: black;
+                border: none;
+                padding: 10px;
+                color: white;
+            }
+
+            table {
+                color: white;
+                padding: 10px;
+            }
+
+            th {
+                cursor: pointer;
+                padding: 10px;
+            }
+
+            td {
+                padding: 5px, 10px;
+            }
+
+        </style>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+        </script>
+
+    </head>
+
+    <body>
+
+        <script src="https://www.w3schools.com/lib/w3.js"></script>
+
+        <div class="tab">
+            <button id="homebutton" class = tablinks onclick="openSection(event, 'home')">Home</button>
+            <button class = tablinks onclick="openSection(event, 'contact')">Contact</button>
+            <button class = tablinks onclick="openSection(event, 'about')">About</button>
+        </div>
+
+        <div id="home" class="tabcontent">
+            
+            <!-- Headings -->
+            
+            <h1>App Store</h1>
+            
+            <hr>
+
+            <input class="searchbar" id="searchId" type="text"
+            placeholder="Search for apps" onchange="updateSearch()">
+
+            <!-- <input type="text" placeholder="Search App"> -->
+
+            <table id="appTable">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Icon</th>
+                    <th>App</th>
+                    <th>Category</th>
+                    <th>Rating</th>
+                </tr>
+                <!-- <tr>
+                    <td colspan="5"><i></i> No results found</td>
+                </tr> -->
+                </thead>
+                <tbody>
+                    <!-- To be filled from script -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="contact" class="tabcontent">
+            
+            <!-- Headings -->
+            
+            <h1>Contact Information</h1>
+            
+            <hr>
+
+            <p>Contact me at the following e-mail address: thakralr@mcmaster.ca</p>
+            
+        </div>
+
+        <div id="about" class="tabcontent">
+            
+            <!-- Headings -->
+            
+            <h1>About This Website</h1>
+            
+            <hr>
+
+            <p>Search apps on the iTunes App Store using the Search bar in the homepage!<br><br>
+            Sort the apps by Name, Category and Rating by clicking on the respective table heading.</p>
+            
+        </div>
+
+    </body>
+
+    <script>
+
+        var apps = [];
+
+        var sortOrderAsc = [false, false, false];
+
+        function openSection(evt, sectName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(sectName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        File.load = function(file_url) {
+            return fetch(file_url).then(res => res.blob());
+        };
+
+        function translate(fileName) {
+
+            let titles = document.getElementById('appTable').getElementsByTagName('th');
+            titles[2].innerText = checkToRemove(titles[2].innerText);
+            titles[3].innerText = checkToRemove(titles[3].innerText);
+            titles[4].innerText = checkToRemove(titles[4].innerText);    
+        
+            File.load(fileName).then(function (blob) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    var elems = JSON.parse(e.target.result);
+
+                    var results = elems.results;
+
+                    apps = [];
+                    for (let i = 0; i < elems.resultCount; i++) {
+                        apps.push(results[i]);
+                    }
+
+                    $("#appTable tbody tr").remove();
+
+                    var old_tbody = document.getElementById('appTable').getElementsByTagName('tbody')[0];
+                    var new_tbody = document.createElement('tbody');
+                    old_tbody.parentNode.replaceChild(new_tbody, old_tbody)
+
+                    for (let i = 0; i < apps.length; i++) {
+                        var newRow   = new_tbody.insertRow(-1);
+
+                        for (let j = 0; j < 5; j++) {
+                        
+                        var newCell  = newRow.insertCell(-1);
+                        switch(j) {
+                            case 0:
+                                var newText  = document.createTextNode(i+1);
+                                newCell.appendChild(newText);
+                                break;
+                            case 1:
+                                var newText  = document.createElement('img')
+                                newText.src = `${apps[i].artworkUrl60}`
+                                newCell.appendChild(newText);
+                                break;
+                            case 2:
+                                var newText  = document.createTextNode(apps[i].trackName);
+                                newCell.appendChild(newText);
+                                break;
+                            case 3:
+                                var newText  = document.createTextNode(apps[i].primaryGenreName);
+                                newCell.appendChild(newText);
+                                break;
+                            case 4:
+                                let rating = apps[i].averageUserRating;
+                                if (!rating) rating = "Not enough reviews";
+                                var newText  = document.createTextNode(rating);
+                                newCell.appendChild(newText);
+                                break;
+                            default:
+                                var newText  = document.createTextNode('New row');
+                                newCell.appendChild(newText);
+                            }
+                        }
+                    }
+
+                };
+
+                reader.readAsText(blob);
+            });
+        }
+
+        function updateSearch() {
+            var searchTerm = document.getElementById('searchId').value;
+            if (searchTerm == "" || !searchTerm) searchTerm = "a";
+            translate(`http://itunes.apple.com/search?country=us&entity=software&limit=100&term=${searchTerm}`);
+        }
+
+        function checkToRemove(text) {
+            if (text.endsWith('▲') || text.endsWith('▼')) {
+                text = text.slice(0, -1);
+                return text;
+            } else return text;
+        }
+
+        function sortTable(table, sortColumn){
+            if (sortColumn > 1 && sortColumn < 5) {
+                let aNum = sortColumn-2;
+                (sortOrderAsc[aNum])?sortOrderAsc[aNum]=false:sortOrderAsc[aNum]=true;
+                let titles = document.getElementById('appTable').getElementsByTagName('th');
+
+                let toModify = titles[sortColumn].innerText;
+
+                titles[2].innerText = checkToRemove(titles[2].innerText);
+                titles[3].innerText = checkToRemove(titles[3].innerText);
+                titles[4].innerText = checkToRemove(titles[4].innerText);
+
+                if (sortOrderAsc[aNum]) {
+                    titles[sortColumn].innerText = titles[sortColumn].innerText + ' ▲';
+                } else {
+                    titles[sortColumn].innerText = titles[sortColumn].innerText + ' ▼';
+                }
+            }
+            apps.sort(function(a, b) {
+                if (sortColumn == 2) {
+                    
+                    if (a.trackName.toUpperCase() > b.trackName.toUpperCase()) {
+                        if (sortOrderAsc[0]) return 1;
+                        else return -1;
+                    }
+                    if (a.trackName.toUpperCase() < b.trackName.toUpperCase()) {
+                        if (sortOrderAsc[0]) return -1;
+                        else return 1;
+                    }
+                    return 0;
+                } else if (sortColumn == 3) {
+                    if (a.primaryGenreName > b.primaryGenreName) {
+                        if (sortOrderAsc[1]) return 1;
+                        else return -1;
+                    }
+                    if (a.primaryGenreName < b.primaryGenreName) {
+                        if (sortOrderAsc[1]) return -1;
+                        else return 1;
+                    }
+                    return 0;
+                } else if (sortColumn == 4) {
+                    let ratingA = a.averageUserRating;
+                    let ratingB = b.averageUserRating;
+                    if (!ratingA) ratingA = 0;
+                    if (!ratingB) ratingB = 0;
+                    if (parseFloat(ratingA) > parseFloat(ratingB)) {
+                        if (sortOrderAsc[2]) return 1;
+                        else return -1;
+                    }
+                    if (parseFloat(ratingA) < parseFloat(ratingB)) {
+                        if (sortOrderAsc[2]) return -1;
+                        else return 1;
+                    }
+                    return 0;
+                }
+            });
+
+            $("#appTable tbody tr").remove();
+
+            var old_tbody = document.getElementById('appTable').getElementsByTagName('tbody')[0];
+            var new_tbody = document.createElement('tbody');
+            old_tbody.parentNode.replaceChild(new_tbody, old_tbody)
+
+            for (let i = 0; i < apps.length; i++) {
+                var newRow   = new_tbody.insertRow(-1);
+
+                for (let j = 0; j < 5; j++) {
+                
+                var newCell  = newRow.insertCell(-1);
+                switch(j) {
+                    case 0:
+                        var newText  = document.createTextNode(i+1);
+                        newCell.appendChild(newText);
+                        break;
+                    case 1:
+                        var newText  = document.createElement('img')
+                        newText.src = `${apps[i].artworkUrl60}`
+                        newCell.appendChild(newText);
+                        break;
+                    case 2:
+                        var newText  = document.createTextNode(apps[i].trackName);
+                        newCell.appendChild(newText);
+                        break;
+                    case 3:
+                        var newText  = document.createTextNode(apps[i].primaryGenreName);
+                        newCell.appendChild(newText);
+                        break;
+                    case 4:
+                        let rating = apps[i].averageUserRating;
+                        if (!rating) rating = "Not enough reviews";
+                        var newText  = document.createTextNode(rating);
+                        newCell.appendChild(newText);
+                        break;
+                    default:
+                        var newText  = document.createTextNode('New row');
+                        newCell.appendChild(newText);
+                    }
+                }
+            }
+        }
+
+        const table = document.querySelector('table');
+        table.querySelectorAll('th') 
+        .forEach((element, columnNo)=>{ 
+            element.addEventListener('click', event => {
+                if (columnNo > 1) sortTable(table, columnNo); 
+            })
+        });
+
+        updateSearch();
+
+        document.getElementById('homebutton').click();
+
+    </script>
+</html>

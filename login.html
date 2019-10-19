@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>App Store Search</title>
+        <meta name="viewport" charset="UTF-8" content="width=device-width">
+
+        <style>
+
+            a.boxed:link, a.boxed:visited {
+                background-color: rgb(88, 147, 185);
+                color: white;
+                padding: 15px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            a.boxed:hover {
+                background-color: rgb(115, 187, 235);
+            }
+            
+            body {
+                background-color: rgb(44, 42, 42);
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
+
+            h1 {
+                color: white;
+                font-size: 30px;
+            }
+
+            p {
+                border: 2px solid white;
+                padding: 20px;
+            }
+
+            #pdiff {
+                border: 2px solid tan;
+            }
+
+            p.secondPara {
+                color: aqua;
+                text-align: center;
+            }
+
+            .tab {
+                overflow: hidden;
+            }
+
+            .tab button {
+                background-color: rgb(34, 34, 34);
+                border: none;
+                outline: none;
+                cursor: pointer;
+                margin: 10px;
+                padding: 16px;
+                transition: 0.3s;
+                font-size: 15px;
+                color: white;
+            }
+
+            .tab button:hover {
+                background-color: rgb(68, 68, 68);
+            }
+
+            .tab button.active {
+                background-color: rgb(44, 42, 42);
+            }
+
+            .searchbar {
+                float:top;
+                margin: 10px;
+                width:95%;
+                background-color: black;
+                border: none;
+                padding: 10px;
+                color: white;
+            }
+
+            .login {
+                margin: 10px;
+                width:50%;
+                background-color: black;
+                border: none;
+                padding: 10px;
+                color: white;
+                align-content: center;
+            }
+
+            table {
+                color: white;
+                padding: 10px;
+            }
+
+            th {
+                cursor: pointer;
+            }
+
+        </style>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+        </script>
+
+    </head>
+
+    <body>
+
+        <script src="https://www.w3schools.com/lib/w3.js"></script>
+
+
+        <div id="home" class="tabcontent">
+            
+            <!-- Headings -->
+            
+            <h1>Log In</h1>
+            
+            <hr>
+
+            <input class="login" id="userId" type="text"
+            placeholder="Enter Username (Hint: user1)">
+
+            <input class="login" id="pass" type="text"
+            placeholder="Enter Password (Hint: pass1)">
+
+            <div class="tab">
+                <button id="loginButton" onclick="login()">Login</button>
+            </div>
+
+        </div>
+
+    </body>
+
+    <script>
+
+        var userField = document.getElementById('userId');
+        var passField = document.getElementById('pass');
+
+        userField.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("loginButton").click();
+            }
+        });
+        passField.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("loginButton").click();
+            }
+        });
+
+        function login() {
+            var user = userField.value;
+            var pass = passField.value;
+
+            if (user == "user1" && pass == "pass1") {
+                location.href = 'proj1.html';
+            } else {
+                alert("Incorrect username or password!");
+            }
+        }
+
+    </script>
+</html>
